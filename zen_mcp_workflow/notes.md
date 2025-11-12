@@ -4,13 +4,14 @@ This document tracks a simulated workflow to demonstrate how the Zen MCP server 
 
 ## The Goal
 
-To fix a bug in a Python script by intelligently using four different tiers of AI tools: a local model, the Z.ai Lite plan, the Copilot Pro CLI, and the Google AI Pro plan.
+To fix a bug in a Python script by intelligently budgeting your AI requests across four different tiers of tools: a local model, the Z.ai Lite plan, the Copilot Pro CLI, and the Google AI Pro plan.
 
 ## The Workflow
 
 ### Step 1: Initial Analysis with a Local Model (e.g., Ollama)
 
 **Goal:** Get a quick, free first look at the problem.
+**Cost:** 0 Gemini Pro requests.
 
 **Simulated Command:** `claude "use zen with ollama to analyze zen_mcp_workflow/buggy_script.py"`
 
@@ -21,18 +22,20 @@ To fix a bug in a Python script by intelligently using four different tiers of A
 
 ### Step 2: Code Review & Deeper Understanding with Z.ai Lite Plan (GLM 4.6)
 
-**Goal:** Use the generous quota of the Z.ai plan to get a more detailed confirmation of the bug and the required fix.
+**Goal:** Use the generous quota of the Z.ai plan for iterative refinement.
+**Cost:** 0 Gemini Pro requests.
 
 **Simulated Command:** `clink with zai "A local model suggested a bug in the calculate_average function in buggy_script.py. Please review the function and confirm the issue."`
 
 **Simulated Output:**
 "Confirmed. The `- 1` in the return statement is incorrect for a standard average calculation. It should be removed. The rest of the script is fine."
 
-**Analysis:** Your Z.ai plan is perfect for this kind of iterative review. With **~120 prompts every 5 hours**, you can use it frequently for validation and refinement without worrying about hitting a limit.
+**Analysis:** Your Z.ai plan is perfect for this. With **~120 prompts every 5 hours**, you can use it for the bulk of your interactive coding and review sessions.
 
 ### Step 3: Targeted Code Generation with Copilot Pro CLI
 
 **Goal:** Use the Copilot CLI's strength in code generation to write the corrected function.
+**Cost:** 0 Gemini Pro requests.
 
 **Simulated Command:** `clink with copilot "Based on the previous analysis, please generate the corrected version of the calculate_average function from buggy_script.py."`
 
@@ -45,11 +48,12 @@ def calculate_average(numbers):
     return sum(numbers) / len(numbers)
 ```
 
-**Analysis:** We've now used the Copilot Pro CLI via `clink` for what it does best: generating precise code. Note that it even added a docstring and a check for an empty list—a nice improvement.
+**Analysis:** The Copilot Pro CLI is the right tool for direct code generation, saving your more advanced models for analysis and planning.
 
 ### Step 4: Final High-Level Review with Gemini Pro
 
-**Goal:** Before committing, use your most powerful model for a final "sanity check", especially if the change were part of a larger, more complex system.
+**Goal:** Spend one of your premium requests for a final, high-value review.
+**Cost:** 1 Gemini Pro request (out of your 100/day budget).
 
 **Simulated Command:** `clink with gemini "The bug in buggy_script.py has been fixed. The new implementation is [paste new function]. Does this look correct and are there any other potential issues or improvements to consider in a real-world application?"`
 
@@ -59,4 +63,4 @@ def calculate_average(numbers):
 2.  **Error Handling:** The check for an empty list is good. You might also consider if the list could contain non-numeric types and add appropriate error handling.
 The fix is solid."
 
-**Analysis:** We reserved our premium Gemini Pro access for a high-level, architectural review. We didn't waste its power on the simple bug fix, but instead used it to get strategic advice, which is the best use of a limited, top-tier model.
+**Analysis:** We spent just **one** of our **100 daily Gemini Pro requests**. We didn't waste this valuable resource on the simple steps, but instead used it to get high-level, strategic advice that improves the overall quality of the code. This is the core of the optimization strategy.
