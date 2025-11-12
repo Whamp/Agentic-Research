@@ -1,28 +1,34 @@
 # Maximizing Your AI Subscriptions with the Zen MCP Server
 
-This report explains how to use the Zen MCP server to make the best use of your limited Gemini Pro, Z.ai Code plan GLM 4.6, and Copilot subscriptions. By orchestrating multiple AI models, you can optimize for both cost and performance, using the best tool for each task.
+This report provides a tailored strategy for using the Zen MCP server to make the best use of your specific AI subscriptions: the **Google AI Pro plan (with Gemini 2.5 Pro)**, the **Z.ai Lite plan (GLM 4.6)**, and **GitHub Copilot Pro (with CLI access)**. By orchestrating these services, you can create a powerful and cost-effective development workflow.
 
 ## Key Benefits of Using Zen MCP
 
-*   **Multi-Model Orchestration:** Zen MCP allows you to seamlessly switch between different AI models within a single, continuous workflow. This means you can use a free local model for a quick first pass, a powerful model like Gemini Pro for in-depth analysis, and a specialized model like GLM 4.6 for code reviews.
+*   **Multi-Model Orchestration:** Zen MCP, especially with its `clink` tool, allows you to seamlessly switch between different AI CLIs. This means you can use a free local model for a first pass, your Z.ai plan for frequent tasks, the Copilot CLI for specific code generation, and reserve Gemini Pro for the most demanding requests.
 
-*   **Context Preservation:** The server maintains the full conversation history across all models. When you switch from a local model to Gemini Pro, for example, Gemini Pro receives the entire context of the conversation, so you don't have to repeat yourself. This saves time and reduces token usage.
+*   **Context Preservation:** The server maintains the full conversation history across all models and CLIs. When you hand off a task from your main CLI to the Copilot CLI, it receives the entire context, saving you time, effort, and token usage.
 
-*   **Cost Optimization:** By using free, local models for initial analysis and routine tasks, you can reserve your expensive, high-powered model subscriptions for the tasks that truly require them. This "tiered" approach to AI usage can significantly reduce your costs.
+*   **Cost & Quota Optimization:** By using free local models and the generous quota of your Z.ai Lite plan for the bulk of your work, you can reserve your premium Gemini Pro and Copilot Pro access for when they are most needed. This "tiered" approach significantly reduces the risk of hitting usage limits.
 
-*   **Flexibility and Choice:** Zen MCP supports a wide range of AI providers, giving you the freedom to choose the best model for each specific task. You are not locked into a single provider's ecosystem.
+*   **Flexibility and Choice:** You have the freedom to choose the best tool for each specific task, all within one terminal session.
 
-## A Practical, Cost-Saving Workflow
+## A Practical, Cost-Saving Workflow Tailored to Your Plans
 
-Here is a simple, effective workflow you can apply to your daily development work:
+Here is an effective workflow designed around your specific subscriptions:
 
-1.  **Initial Analysis (Local Model):** When you encounter a bug or need to understand a piece of code, start with a local model running on a tool like Ollama. This is a free way to get a quick overview and identify potential issues.
+1.  **Initial Analysis (Local Model - e.g., Ollama):** For any new task, bug, or query, start with a local model. This costs nothing and is perfect for initial exploration, brainstorming, and simple code generation.
 
-2.  **In-Depth Analysis (Gemini Pro):** If the initial analysis is insufficient, escalate to your Gemini Pro subscription. Use its powerful reasoning capabilities to get a detailed explanation, a concrete solution, or a comprehensive plan.
+2.  **Code Review and Iteration (Z.ai Lite Plan - GLM 4.6):** Your Z.ai Lite plan, with its quota of **~120 prompts every 5 hours**, is your workhorse for analysis and refinement. Use it for:
+    *   Getting a second opinion on the local model's output.
+    *   Performing detailed code reviews.
+    *   Suggesting refactors and validating logic.
 
-3.  **Code Review and Validation (GLM 4.6):** Before implementing a fix, use your GLM 4.6 subscription to get a second opinion. This is a great way to catch potential errors and ensure the quality of your code.
+3.  **Targeted Code Generation (Copilot Pro CLI):** When you need to generate specific code, especially boilerplate or implementing a well-defined function, use the Copilot CLI via `clink`. Copilot excels at this kind of "code-out" task. This is a great way to use your subscription for its core strength.
 
-4.  **Real-Time Assistance (GitHub Copilot):** Throughout the process, continue to use GitHub Copilot for what it does best: real-time code completion and suggestions in your editor.
+4.  **Complex Problem-Solving (Google AI Pro Plan - Gemini 2.5 Pro):** Treat your Gemini Pro access as a premium, limited resource. Hitting the usage limit will temporarily downgrade you to a less capable model. Reserve it for tasks that require maximum power and context, such as:
+    *   Deep architectural planning or system design.
+    *   Analyzing complex, multi-file bugs that other models struggle with.
+    *   Breaking down a high-level feature request into a detailed implementation plan.
 
 ## Getting Started
 
@@ -30,8 +36,8 @@ To get started with this workflow, you will need to:
 
 1.  **Install the Zen MCP Server:** Follow the instructions in the [official repository](https://github.com/BeehiveInnovations/zen-mcp-server).
 
-2.  **Configure Your API Keys:** Use the `sample_config.md` file in this directory as a template for setting up your `.env` file with your Gemini and Z.ai API keys.
+2.  **Configure Your API Keys & CLIs:** Use the `sample_config.md` file in this directory as a template for setting up your `.env` file. Ensure your local environment is configured so that Zen MCP can call the Copilot CLI.
 
-3.  **Follow the Workflow:** Start using the multi-model approach in your daily work. The `notes.md` file in this directory provides a detailed, simulated example of this workflow in action.
+3.  **Follow the Workflow:** Start using this tailored multi-model approach in your daily work. The `notes.md` file in this directory will be updated to reflect this more specific strategy.
 
-By using the Zen MCP server to orchestrate your AI models, you can get the most out of your limited subscriptions, saving money while leveraging the unique strengths of each model.
+By using Zen MCP to orchestrate your AI subscriptions this way, you can leverage the unique strengths and limits of each plan to create a highly efficient and economical development process.
