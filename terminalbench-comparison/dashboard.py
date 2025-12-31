@@ -129,7 +129,7 @@ else:
 
     # --- Visualization Section ---
 
-    tab1, tab2, tab3, tab4 = st.tabs(["Overview", "Detailed Comparison", "Recommendations", "Raw Data"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["Overview", "Detailed Comparison", "Harness Analysis", "Recommendations", "Raw Data"])
 
     with tab1:
         st.subheader("Performance Overview")
@@ -180,9 +180,9 @@ else:
 
         col1, col2 = st.columns(2)
         with col1:
-            baseline = st.selectbox("Select Baseline", options=run_cols, index=idx_base)
+            baseline = st.selectbox("Select Baseline Run", options=run_cols, index=idx_base)
         with col2:
-            challenger = st.selectbox("Select Challenger", options=run_cols, index=idx_chall)
+            challenger = st.selectbox("Select Challenger Run", options=run_cols, index=idx_chall)
 
         if baseline and challenger and baseline != challenger and not df.empty:
             # Calculate Delta
@@ -214,7 +214,7 @@ else:
                 st.dataframe(
                     df_diff[['Task', 'Category', 'Difficulty', baseline, challenger, 'Delta']]
                     .style.format({baseline: "{:.0f}%", challenger: "{:.0f}%", 'Delta': "{:+.0f}%"})
-                    # .background_gradient(subset=['Delta'], cmap='RdYlGn') # Disabled due to matplotlib dep issue on some envs
+                    # .background_gradient(subset=['Delta'], cmap='RdYlGn')
                 )
             else:
                 st.info("No performance differences found between these runs.")
@@ -225,6 +225,102 @@ else:
             st.info("Select two different runs to compare.")
 
     with tab3:
+        st.subheader("Harness Analysis (Agent vs Agent)")
+        st.markdown("Compare two Agent Harnesses by analyzing their performance across *common* models. This isolates the impact of the agent wrapper/tooling.")
+
+        # 1. Group runs by Agent
+        agent_map = {} # AgentName -> {ModelName -> RunKey}
+        for run_key, run_data in st.session_state.runs.items():
+            agent = run_data['metadata']['agentName']
+            model = run_data['metadata']['modelName']
+            if agent not in agent_map:
+                agent_map[agent] = {}
+            agent_map[agent][model] = run_key
+
+        unique_agents = sorted(agent_map.keys())
+
+        col_h1, col_h2 = st.columns(2)
+        with col_h1:
+            h_baseline = st.selectbox("Select Baseline Harness", options=unique_agents, index=unique_agents.index('terminus-2') if 'terminus-2' in unique_agents else 0)
+        with col_h2:
+            h_challenger = st.selectbox("Select Challenger Harness", options=unique_agents, index=0)
+
+        if h_baseline and h_challenger and h_baseline != h_challenger:
+            # Find intersection of models
+            base_models = set(agent_map[h_baseline].keys())
+            chall_models = set(agent_map[h_challenger].keys())
+            common_models = sorted(list(base_models.intersection(chall_models)))
+
+            if common_models:
+                st.success(f"Found {len(common_models)} common models: {', '.join(common_models)}")
+
+                # Compute Harness Delta
+                # For each task, Average(Challenger(m) - Baseline(m)) for m in common_models
+
+                h_deltas = []
+
+                for task in df['Task']:
+                    task_deltas = []
+                    for model in common_models:
+                        base_key = agent_map[h_baseline][model]
+                        chall_key = agent_map[h_challenger][model]
+
+                        val_base = df.loc[df['Task'] == task, base_key].values[0]
+                        val_chall = df.loc[df['Task'] == task, chall_key].values[0]
+
+                        task_deltas.append(val_chall - val_base)
+
+                    avg_delta = sum(task_deltas) / len(task_deltas)
+                    if avg_delta != 0:
+                        cat = df.loc[df['Task'] == task, 'Category'].values[0]
+                        diff = df.loc[df['Task'] == task, 'Difficulty'].values[0]
+                        h_deltas.append({
+                            'Task': task,
+                            'Category': cat,
+                            'Difficulty': diff,
+                            'Avg Harness Delta': avg_delta,
+                            'Models Used': len(common_models)
+                        })
+
+                df_h_delta = pd.DataFrame(h_deltas)
+
+                if not df_h_delta.empty:
+                    df_h_delta = df_h_delta.sort_values(by='Avg Harness Delta', ascending=False)
+
+                    st.metric(
+                        label=f"Net Harness Impact ({h_challenger} vs {h_baseline})",
+                        value=f"{df_h_delta['Avg Harness Delta'].mean():.2f}%",
+                        help="Average percentage point difference across all tasks and shared models."
+                    )
+
+                    # Chart: Avg Delta by Category
+                    cat_h_delta = df_h_delta.groupby('Category')['Avg Harness Delta'].mean().sort_values()
+                    fig_h_cat = px.bar(
+                        x=cat_h_delta.values,
+                        y=cat_h_delta.index,
+                        orientation='h',
+                        title=f"Average Harness Impact by Category ({h_challenger} - {h_baseline})",
+                        labels={'x': 'Avg Delta (%)', 'y': 'Category'},
+                        color=cat_h_delta.values,
+                        color_continuous_scale='RdYlGn'
+                    )
+                    st.plotly_chart(fig_h_cat, use_container_width=True)
+
+                    st.write("### Top Harness Differences")
+                    st.dataframe(
+                        df_h_delta.style.format({'Avg Harness Delta': "{:+.2f}%"})
+                        # .background_gradient(subset=['Avg Harness Delta'], cmap='RdYlGn')
+                    )
+                else:
+                    st.info("No performance differences found across shared models.")
+            else:
+                st.warning(f"No common models found between {h_baseline} and {h_challenger}. Comparison requires at least one overlapping model.")
+                st.write(f"Models in {h_baseline}: {', '.join(base_models)}")
+                st.write(f"Models in {h_challenger}: {', '.join(chall_models)}")
+        else:
+            st.info("Select two different harnesses to compare.")
+
+    with tab4:
         st.subheader("Task Recommendations")
         st.markdown("Select one or more categories to find the best performing agent+model combination for your specific workflow.")
 
@@ -260,6 +356,6 @@ else:
         else:
              st.warning("No data available.")
 
-    with tab4:
+    with tab5:
         st.subheader("Full Task Data")
         st.dataframe(df)
