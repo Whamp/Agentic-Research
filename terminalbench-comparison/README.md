@@ -1,56 +1,53 @@
-# TerminalBench 2.0: Droid GPT 5.2 vs. Droid Opus 4.5 Comparison
+# TerminalBench 2.0 Comparison Dashboard
 
-This report analyzes the task-level performance differences between **Droid GPT 5.2** and **Droid Opus 4.5** on the TerminalBench 2.0 leaderboard.
+This project provides tools to analyze and compare AI model performance on the TerminalBench 2.0 leaderboard.
 
-## Executive Summary
+## Features
 
-While both models show strong performance across many tasks, there are distinct areas where one outperforms the other.
+-   **Dashboard:** An interactive web app (`dashboard.py`) to visualize comparisons.
+-   **CLI Tool:** A script (`compare_tbench.py`) for quick command-line comparisons.
+-   **Library:** Reusable scraping logic in `tbench_lib.py`.
 
-*   **Droid GPT 5.2** excels in:
-    *   **Scientific Computing:** Significantly better at `adaptive-rejection-sampler` (+80%) and `protein-assembly` (+80%).
-    *   **Security (Web/Network):** Better at `break-filter-js-from-html` (+60%).
-    *   **System Administration (Mail/Network):** Better at `mailman` (+60%).
-    *   **Games:** Better at `chess-best-move` (+60%).
-    *   **Data Science (Stan/R):** Better at `rstan-to-pystan` (+40%) and `sparql-university` (+40%).
+## Quick Start (Dashboard)
 
-*   **Droid Opus 4.5** excels in:
-    *   **Data Science (Bayesian/MCMC):** massively outperforms in `mcmc-sampling-stan` (+100%, GPT 5.2 failed completely).
-    *   **Low-Level System Engineering:** Better at `extract-elf` (+80%) and `polyglot-rust-c` (+60%).
-    *   **Complex File Operations:** Better at `circuit-fibsqrt` (+60%).
-    *   **Legacy Systems:** Better at `install-windows-3.11` (+60%).
+1.  **Install Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## Detailed Analysis by Category
+2.  **Run the Dashboard:**
+    ```bash
+    streamlit run dashboard.py
+    ```
 
-### Scientific Computing
-GPT 5.2 appears to have a stronger grasp on certain scientific computing tasks, particularly those involving R and specific biological assembly tasks (`protein-assembly`). However, Opus 4.5 completely dominates the `mcmc-sampling-stan` task, suggesting it might handle Stan/Bayesian modeling much better when MCMC sampling is involved.
+3.  **Usage:**
+    -   **Load Runs:**
+        -   Paste a leaderboard URL into the sidebar input and click "Load Run".
+        -   Or use the "Load Top 5 Models" button to quickly fetch data from the leaderboard.
+    -   **Settings:**
+        -   Toggle **"Exclude Impossible Tasks"** to remove tasks where all loaded agents have a 0% success rate, ensuring a fairer comparison on solvable problems.
+    -   **Overview Tab:** View global performance charts and category breakdowns.
+    -   **Comparison Tab:** Select a "Baseline" and "Challenger" to see the performance delta and tasks with changed outcomes.
+    -   **Recommendations Tab:** Select categories (e.g., "scientific-computing") to get a ranked list of the best agents/models for that domain.
 
-### System Administration & Engineering
-The models trade blows here. GPT 5.2 is better at setting up a mail server (`mailman`), while Opus 4.5 is better at emulating legacy environments (`install-windows-3.11`) and handling low-level binary extraction (`extract-elf`).
+## Analysis: Droid vs. Terminus (Opus 4.5)
 
-### Coding & Debugging
-Both models are generally strong, but Opus 4.5 shows an edge in "polyglot" tasks (`polyglot-rust-c`) and complex logic simulation (`circuit-fibsqrt`). GPT 5.2 shows a surprising advantage in `cancel-async-tasks`, indicating it might handle Python async patterns better in this specific harness.
+Based on the automated analysis using the dashboard logic:
 
-### Data Science & Querying
-GPT 5.2 performs better on `sparql-university`, indicating potentially better knowledge graph/SPARQL capabilities. Opus 4.5 is superior in `mcmc-sampling-stan`.
+When comparing **Droid** (Challenger) against the baseline **Terminus** agent, both using **Claude Opus 4.5**:
 
-## Tool Usage
+*   **Overall:** Droid changes the outcome of 40 tasks compared to Terminus.
+*   **Droid Advantages:**
+    *   **Polyglot/System Engineering:** Droid massively improves `polyglot-rust-c` (+80%), suggesting better handling of multi-language compilation environments.
+    *   **Complex Configuration:** Significant gains in `configure-git-webserver` (+60%) and `build-cython-ext` (+60%).
+    *   **Data Querying:** Droid shows a strong advantage (+40% avg delta) in this category.
+*   **Droid Weaknesses (Terminus wins):**
+    *   **Security Exploitation:** Droid completely fails `break-filter-js-from-html` (-100%) where Terminus succeeds.
+    *   **Model Training Recovery:** Droid fails `pytorch-model-recovery` (-100%).
+    *   **Scientific Pipelines:** Droid struggles with `dna-assembly` (-40%) compared to Terminus.
 
-A tool `compare_tbench.py` has been created to perform this comparison for any two models/harnesses on the leaderboard.
+This suggests **Droid** is a more capable "SysAdmin/DevOps" agent (better at compiling, configuring servers, and query languages), while **Terminus** might have better specific tooling or sandboxing for security exploits and ML training workflows.
 
-### Usage
+## Previous Analysis: Droid GPT 5.2 vs Opus 4.5
 
-```bash
-python3 compare_tbench.py <URL1> <URL2> --name1 "Model Name 1" --name2 "Model Name 2"
-```
-
-**Example:**
-
-```bash
-python3 compare_tbench.py \
-  "https://www.tbench.ai/leaderboard/terminal-bench/2.0/Factory%20Droid/unknown/gpt-5.2%40openai" \
-  "https://www.tbench.ai/leaderboard/terminal-bench/2.0/Factory%20Droid/unknown/claude-opus-4-5-20251101%40anthropic" \
-  --name1 "Droid GPT 5.2" \
-  --name2 "Droid Opus 4.5"
-```
-
-The tool scrapes the leaderboard pages for detailed task performance and the registry for task metadata (Category, Difficulty), then outputs a Markdown table comparing the success rates.
+See the generated report in `analysis_data.md` (or run the CLI tool) for the comparison between models within the Droid harness.
